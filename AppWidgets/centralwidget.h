@@ -1,7 +1,11 @@
 #ifndef CENTRALWIDGET_H
 #define CENTRALWIDGET_H
 
+#include <QPushButton>
+#include <QLineEdit>
+#include <QGroupBox>
 #include <QWidget>
+#include <QLabel>
 
 class CentralWidget : public QWidget
 {
@@ -9,8 +13,9 @@ class CentralWidget : public QWidget
 public:
     explicit CentralWidget(QWidget *parent = nullptr);
 
-signals:
-
+private:
+    QLabel *appLabel;
+    QGroupBox *googleAuthGroup;
 };
 
 #endif // CENTRALWIDGET_H
