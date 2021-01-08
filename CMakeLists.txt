@@ -19,6 +19,10 @@ set(PROJECT_SOURCES
     ${TS_FILES}
 )
 
+configure_file(app_config.h.in app_config.h)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 add_executable(TinGen
     ${PROJECT_SOURCES}
 )
