@@ -3,6 +3,8 @@ set(APPWIDGETS_SOURCES
     centralwidget.h
     mainwindow.cpp
     mainwindow.h
+    googleoauth2flow.cpp
+    googleoauth2flow.h
 )
 
 add_library(AppWidgets
