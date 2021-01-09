@@ -10,5 +10,8 @@ add_library(AppWidgets
 )
 
 target_link_libraries(AppWidgets
-    PUBLIC Qt5::Widgets
+    PRIVATE
+        Qt5::Widgets
+        Qt5::Network
+        Qt5::NetworkAuth
 )
