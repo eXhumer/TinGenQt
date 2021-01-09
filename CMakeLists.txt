@@ -39,6 +39,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
+    ${PROJECT_NAME}.qrc
 )
 
 add_subdirectory(AppWidgets)
