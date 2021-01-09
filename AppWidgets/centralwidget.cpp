@@ -1,4 +1,5 @@
 #include "centralwidget.h"
+#include <QDesktopServices>
 #include <QApplication>
 #include <QFormLayout>
 #include <QBoxLayout>
@@ -6,6 +7,10 @@
 CentralWidget::CentralWidget(QWidget *parent)
     : QWidget(parent)
 {
+    this->networkAccessManager = new QNetworkAccessManager(this);
+    this->googleOAuthFlow = new GoogleOAuth2Flow(this->networkAccessManager, this);
+    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::authorizeWithBrowser, &QDesktopServices::openUrl);
+
     auto centralLayout = new QVBoxLayout;
     this->setLayout(centralLayout);
 
@@ -20,6 +25,7 @@ CentralWidget::CentralWidget(QWidget *parent)
     googleAuthGroup->layout()->addWidget(lineEdit);
 
     auto authNewUserBtn = new QPushButton(tr("main.auth_user_btn"));
+    connect(authNewUserBtn, &QPushButton::clicked, this, &CentralWidget::authBtnClicked);
     googleAuthGroup->layout()->addWidget(authNewUserBtn);
 
     auto revokeUserBtn = new QPushButton(tr("main.revoke_user_btn"));
@@ -44,4 +50,9 @@ CentralWidget::CentralWidget(QWidget *parent)
     centralLayout->addWidget(generateBtn);
 
     centralLayout->addStretch();
+}
+
+void CentralWidget::authBtnClicked(bool clicked) {
+    Q_UNUSED(clicked);
+    this->googleOAuthFlow->grant();
 }

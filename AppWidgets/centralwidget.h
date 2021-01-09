@@ -1,7 +1,7 @@
 #ifndef CENTRALWIDGET_H
 #define CENTRALWIDGET_H
 
-#include <QOAuth2AuthorizationCodeFlow>
+#include "googleoauth2flow.h"
 #include <QNetworkAccessManager>
 #include <QPushButton>
 #include <QLineEdit>
@@ -16,11 +16,14 @@ class CentralWidget : public QWidget
 public:
     explicit CentralWidget(QWidget *parent = nullptr);
 
+public slots:
+    void authBtnClicked(bool clicked);
+
 private:
     QLabel *appLabel;
     QGroupBox *googleAuthGroup;
     QNetworkAccessManager *networkAccessManager;
-    QOAuth2AuthorizationCodeFlow *oauthFlow;
+    GoogleOAuth2Flow *googleOAuthFlow;
 
 };
 
