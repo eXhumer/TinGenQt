@@ -32,9 +32,16 @@ CentralWidget::CentralWidget(QWidget *parent)
     auto selectFoldersBtn = new QPushButton(tr("main.select_folders_btn"));
     folderSelectGroup->layout()->addWidget(selectFoldersBtn);
 
-    // TODO: Index Creation Options in a Group Box
-    // TODO: Add Encryption Options in a Group Box
-    // TODO: Add generate button
+    auto indexOptionsGroup = new QGroupBox(tr("main.index_options_group"));
+    indexOptionsGroup->setLayout(new QVBoxLayout);
+    centralLayout->addWidget(indexOptionsGroup);
+
+    auto encIndexOptionsGroup = new QGroupBox(tr("main.encrypt_index_options_group"));
+    encIndexOptionsGroup->setLayout(new QVBoxLayout);
+    centralLayout->addWidget(encIndexOptionsGroup);
+
+    auto generateBtn = new QPushButton(tr("main.generate_btn"));
+    centralLayout->addWidget(generateBtn);
 
     centralLayout->addStretch();
 }
