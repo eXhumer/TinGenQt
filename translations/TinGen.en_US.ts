@@ -2,6 +2,49 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>CentralWidget</name>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="15"/>
+        <source>main.google_auth_group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="22"/>
+        <source>main.auth_user_btn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="25"/>
+        <source>main.revoke_user_btn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="28"/>
+        <source>main.folder_select_group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="32"/>
+        <source>main.select_folders_btn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="35"/>
+        <source>main.index_options_group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="39"/>
+        <source>main.encrypt_index_options_group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AppWidgets/centralwidget.cpp" line="43"/>
+        <source>main.generate_btn</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <location filename="../AppWidgets/mainwindow.cpp" line="14"/>
