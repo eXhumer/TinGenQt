@@ -61,9 +61,14 @@ CentralWidget::CentralWidget(QWidget *parent)
     successLayout->addWidget(successMsgLineEdit);
     indexOptionsLayout->addLayout(successLayout);
 
-    // chainload options
-    // add-nsw-files-without-title-id
-    // add-non-nsw-files
+    auto filterOptionsLayout = new QGridLayout;
+    auto titleIdFilterCheckBox = new QCheckBox(tr("main.index_options_group.title_id_filter"));
+    auto extensionFilterCheckBox = new QCheckBox(tr("main.index_options_group.extension_filter"));
+    filterOptionsLayout->addWidget(titleIdFilterCheckBox, 0, 0);
+    filterOptionsLayout->addWidget(extensionFilterCheckBox, 0, 1);
+    indexOptionsLayout->addLayout(filterOptionsLayout);
+
+    // TODO: chainload options
 
     auto indexOutputPathLayout = new QHBoxLayout;
     auto indexOutPathSelectBtn = new QPushButton(tr("main.index_options_group.select_output_btn"));
