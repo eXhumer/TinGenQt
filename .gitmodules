@@ -1,3 +1,6 @@
 [submodule "translations"]
 	path = translations
 	url = https://github.com/eXhumer/TinGen-translations.git
+[submodule "Qt-Secret"]
+	path = Qt-Secret
+	url = https://github.com/QuasarApp/Qt-Secret.git

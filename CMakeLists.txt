@@ -43,6 +43,7 @@ add_executable(${PROJECT_NAME}
 )
 
 add_subdirectory(AppWidgets)
+add_subdirectory(Qt-Secret)
 
 qt5_create_translation(QM_FILES
     ${CMAKE_SOURCE_DIR}
@@ -53,4 +54,5 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         Qt5::Widgets
         AppWidgets
+        Qt-Secret
 )
