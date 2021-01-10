@@ -37,17 +37,18 @@ configure_file(app_config.h.in app_config.h)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(${PROJECT_NAME}
-    ${PROJECT_SOURCES}
-    ${PROJECT_NAME}.qrc
-)
-
 add_subdirectory(AppWidgets)
 add_subdirectory(Qt-Secret)
 
 qt5_create_translation(QM_FILES
     ${CMAKE_SOURCE_DIR}
     ${TS_FILES}
+)
+
+add_executable(${PROJECT_NAME}
+    ${QM_FILES}
+    ${PROJECT_SOURCES}
+    ${PROJECT_NAME}.qrc
 )
 
 target_link_libraries(${PROJECT_NAME}
