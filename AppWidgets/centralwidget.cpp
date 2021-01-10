@@ -1,8 +1,10 @@
 #include "centralwidget.h"
 #include <QDesktopServices>
 #include <QApplication>
+#include <QRadioButton>
 #include <QFormLayout>
 #include <QBoxLayout>
+#include <QCheckBox>
 
 CentralWidget::CentralWidget(QWidget *parent)
     : QWidget(parent)
@@ -39,8 +41,29 @@ CentralWidget::CentralWidget(QWidget *parent)
     folderSelectGroup->layout()->addWidget(selectFoldersBtn);
 
     auto indexOptionsGroup = new QGroupBox(tr("main.index_options_group"));
-    indexOptionsGroup->setLayout(new QVBoxLayout);
+    auto indexOptionsLayout = new QVBoxLayout;
+    indexOptionsGroup->setLayout(indexOptionsLayout);
     centralLayout->addWidget(indexOptionsGroup);
+
+    auto compressionLayout = new QHBoxLayout;
+    auto zstdCompressionBtn = new QRadioButton(tr("main.index_options_group.zstd_compress_btn"));
+    auto zlibCompressionBtn = new QRadioButton(tr("main.index_options_group.zlib_compress_btn"));
+    auto noCompressionBtn = new QRadioButton(tr("main.index_options_group.no_compress_btn"));
+    compressionLayout->addWidget(zstdCompressionBtn);
+    compressionLayout->addWidget(zlibCompressionBtn);
+    compressionLayout->addWidget(noCompressionBtn);
+    indexOptionsLayout->addLayout(compressionLayout);
+
+    auto successLayout = new QHBoxLayout;
+    auto successMsgCheckBox = new QCheckBox(tr("main.index_options_group.success"));
+    auto successMsgLineEdit = new QLineEdit;
+    successLayout->addWidget(successMsgCheckBox);
+    successLayout->addWidget(successMsgLineEdit);
+    indexOptionsLayout->addLayout(successLayout);
+
+    // chainload options
+    // add-nsw-files-without-title-id
+    // add-non-nsw-files
 
     auto encIndexOptionsGroup = new QGroupBox(tr("main.encrypt_index_options_group"));
     encIndexOptionsGroup->setLayout(new QVBoxLayout);
