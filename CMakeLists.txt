@@ -12,7 +12,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5
@@ -39,6 +39,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(AppWidgets)
 add_subdirectory(Qt-Secret)
+add_subdirectory(jwt-cpp)
 
 qt5_create_translation(QM_FILES
     ${CMAKE_SOURCE_DIR}
