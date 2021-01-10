@@ -16,4 +16,5 @@ target_link_libraries(AppWidgets
         Qt5::Widgets
         Qt5::Network
         Qt5::NetworkAuth
+        jwt-cpp::jwt-cpp
 )

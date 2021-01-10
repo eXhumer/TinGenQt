@@ -4,3 +4,6 @@
 [submodule "Qt-Secret"]
 	path = Qt-Secret
 	url = https://github.com/QuasarApp/Qt-Secret.git
+[submodule "jwt-cpp"]
+	path = jwt-cpp
+	url = https://github.com/Thalhammer/jwt-cpp.git
