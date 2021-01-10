@@ -61,6 +61,7 @@ CentralWidget::CentralWidget(QWidget *parent)
     auto successLayout = new QHBoxLayout;
     auto successMsgCheckBox = new QCheckBox(tr("main.index_options_group.success"));
     auto successMsgLineEdit = new QLineEdit;
+    successMsgLineEdit->setEnabled(false);
     successLayout->addWidget(successMsgCheckBox);
     successLayout->addWidget(successMsgLineEdit);
     indexOptionsLayout->addLayout(successLayout);
