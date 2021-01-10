@@ -38,7 +38,6 @@ configure_file(app_config.h.in app_config.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(AppWidgets)
-add_subdirectory(Qt-Secret)
 add_subdirectory(jwt-cpp)
 
 qt5_create_translation(QM_FILES
@@ -56,5 +55,4 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         Qt5::Widgets
         AppWidgets
-        Qt-Secret
 )
