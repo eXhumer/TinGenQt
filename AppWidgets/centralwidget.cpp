@@ -7,6 +7,7 @@
 #include <QFormLayout>
 #include <QBoxLayout>
 #include <QCheckBox>
+#include <QTreeView>
 
 CentralWidget::CentralWidget(QWidget *parent)
     : QWidget(parent)
@@ -118,7 +119,7 @@ CentralWidget::CentralWidget(QWidget *parent)
                 for(auto &claim: idTokenJwt.get_payload_claims())
                 {
                     if(claim.first == "name") {
-                        googleAuthLineEdit->setText("Logged in as " + QString::fromStdString(claim.second.as_string()));
+                        googleAuthLineEdit->setText(tr("main.logged_in_as") + QString::fromStdString(claim.second.as_string()));
                         authNewUserBtn->setEnabled(false);
                         revokeUserBtn->setEnabled(true);
                         selectFoldersBtn->setEnabled(true);
@@ -130,5 +131,9 @@ CentralWidget::CentralWidget(QWidget *parent)
                 continue;
             }
         }
+    });
+    connect(generateBtn, &QPushButton::clicked, [this](){
+        auto test = new QTreeView();
+        test->show();
     });
 }

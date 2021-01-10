@@ -5,6 +5,10 @@ set(APPWIDGETS_SOURCES
     mainwindow.h
     googleoauth2flow.cpp
     googleoauth2flow.h
+    googlefsmodel.cpp
+    googlefsmodel.h
+    googlefsitem.cpp
+    googlefsitem.h
 )
 
 add_library(AppWidgets
