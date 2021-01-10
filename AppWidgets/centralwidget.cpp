@@ -78,8 +78,20 @@ CentralWidget::CentralWidget(QWidget *parent)
     indexOptionsLayout->addLayout(indexOutputPathLayout);
 
     auto encIndexOptionsGroup = new QGroupBox(tr("main.encrypt_index_options_group"));
-    encIndexOptionsGroup->setLayout(new QVBoxLayout);
+    auto encIndexOptionsGroupLayout = new QVBoxLayout;
+    encIndexOptionsGroup->setLayout(encIndexOptionsGroupLayout);
     centralLayout->addWidget(encIndexOptionsGroup);
+
+    auto encryptIndexCheckBox = new QCheckBox(tr("main.encrypt_index_options_group.encrypt_index"));
+    encIndexOptionsGroupLayout->addWidget(encryptIndexCheckBox);
+
+    auto encPubKeyLayout = new QHBoxLayout;
+    encIndexOptionsGroupLayout->addLayout(encPubKeyLayout);
+
+    auto encPubKeyPathSelectBtn = new QPushButton(tr("main.encrypt_index_options_group.select_key_btn"));
+    auto encPubKeyPathLineEdit = new QLineEdit;
+    encPubKeyLayout->addWidget(encPubKeyPathSelectBtn);
+    encPubKeyLayout->addWidget(encPubKeyPathLineEdit);
 
     auto generateBtn = new QPushButton(tr("main.generate_btn"));
     centralLayout->addWidget(generateBtn);
