@@ -65,6 +65,13 @@ CentralWidget::CentralWidget(QWidget *parent)
     // add-nsw-files-without-title-id
     // add-non-nsw-files
 
+    auto indexOutputPathLayout = new QHBoxLayout;
+    auto indexOutPathSelectBtn = new QPushButton(tr("main.index_options_group.select_output_btn"));
+    auto indexOutPathLineEdit = new QLineEdit;
+    indexOutputPathLayout->addWidget(indexOutPathSelectBtn);
+    indexOutputPathLayout->addWidget(indexOutPathLineEdit);
+    indexOptionsLayout->addLayout(indexOutputPathLayout);
+
     auto encIndexOptionsGroup = new QGroupBox(tr("main.encrypt_index_options_group"));
     encIndexOptionsGroup->setLayout(new QVBoxLayout);
     centralLayout->addWidget(encIndexOptionsGroup);
