@@ -25,7 +25,7 @@ find_package(Qt5
 )
 
 set(TS_FILES
-    translations/TinGen.en_US.ts
+    translations/${PROJECT_NAME}.en_US.ts
 )
 
 set(PROJECT_SOURCES
