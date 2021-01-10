@@ -1,7 +1,9 @@
 #include "centralwidget.h"
 #include <QDesktopServices>
+#include <jwt-cpp/jwt.h>
 #include <QApplication>
 #include <QRadioButton>
+#include <QMessageBox>
 #include <QFormLayout>
 #include <QBoxLayout>
 #include <QCheckBox>
@@ -11,7 +13,7 @@ CentralWidget::CentralWidget(QWidget *parent)
 {
     this->networkAccessManager = new QNetworkAccessManager(this);
     this->googleOAuthFlow = new GoogleOAuth2Flow(this->networkAccessManager, this);
-    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::authorizeWithBrowser, &QDesktopServices::openUrl);
+    this->googleOAuthFlow->setScope("https://www.googleapis.com/auth/drive openid profile email");
 
     auto centralLayout = new QVBoxLayout;
     this->setLayout(centralLayout);
@@ -23,14 +25,15 @@ CentralWidget::CentralWidget(QWidget *parent)
     this->googleAuthGroup->setLayout(new QVBoxLayout);
     centralLayout->addWidget(this->googleAuthGroup);
 
-    auto lineEdit = new QLineEdit;
-    googleAuthGroup->layout()->addWidget(lineEdit);
+    auto googleAuthLineEdit = new QLineEdit;
+    googleAuthLineEdit->setEnabled(false);
+    googleAuthGroup->layout()->addWidget(googleAuthLineEdit);
 
     auto authNewUserBtn = new QPushButton(tr("main.auth_user_btn"));
-    connect(authNewUserBtn, &QPushButton::clicked, this, &CentralWidget::authBtnClicked);
     googleAuthGroup->layout()->addWidget(authNewUserBtn);
 
     auto revokeUserBtn = new QPushButton(tr("main.revoke_user_btn"));
+    revokeUserBtn->setEnabled(false);
     googleAuthGroup->layout()->addWidget(revokeUserBtn);
 
     auto folderSelectGroup = new QGroupBox(tr("main.folder_select_group"));
@@ -38,6 +41,7 @@ CentralWidget::CentralWidget(QWidget *parent)
     centralLayout->addWidget(folderSelectGroup);
 
     auto selectFoldersBtn = new QPushButton(tr("main.select_folders_btn"));
+    selectFoldersBtn->setEnabled(false);
     folderSelectGroup->layout()->addWidget(selectFoldersBtn);
 
     auto indexOptionsGroup = new QGroupBox(tr("main.index_options_group"));
@@ -83,7 +87,7 @@ CentralWidget::CentralWidget(QWidget *parent)
     centralLayout->addWidget(encIndexOptionsGroup);
 
     auto encryptIndexCheckBox = new QCheckBox(tr("main.encrypt_index_options_group.encrypt_index"));
-    encIndexOptionsGroupLayout->addWidget(encryptIndexCheckBox);
+    encIndexOptionsGroupLayout->addWidget(encryptIndexCheckBox, 0, Qt::AlignHCenter);
 
     auto encPubKeyLayout = new QHBoxLayout;
     encIndexOptionsGroupLayout->addLayout(encPubKeyLayout);
@@ -97,9 +101,33 @@ CentralWidget::CentralWidget(QWidget *parent)
     centralLayout->addWidget(generateBtn);
 
     centralLayout->addStretch();
-}
 
-void CentralWidget::authBtnClicked(bool clicked) {
-    Q_UNUSED(clicked);
-    this->googleOAuthFlow->grant();
+    connect(authNewUserBtn, &QPushButton::clicked, this, [this](){
+        this->googleOAuthFlow->grant();
+    });
+    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::authorizeWithBrowser, &QDesktopServices::openUrl);
+    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::granted, this, [=](){
+        auto extraTokens = this->googleOAuthFlow->extraTokens();
+        auto extraTokensKeys = extraTokens.keys();
+        for(auto const &extraTokenkey: extraTokensKeys)
+        {
+            if(extraTokenkey == "id_token")
+            {
+                auto idTokenJwt = jwt::decode(extraTokens[extraTokenkey].toString().toStdString());
+                for(auto &claim: idTokenJwt.get_payload_claims())
+                {
+                    if(claim.first == "name") {
+                        googleAuthLineEdit->setText("Logged in as " + QString::fromStdString(claim.second.as_string()));
+                        authNewUserBtn->setEnabled(false);
+                        revokeUserBtn->setEnabled(true);
+                        selectFoldersBtn->setEnabled(true);
+                    } else {
+                        continue;
+                    }
+                }
+            } else {
+                continue;
+            }
+        }
+    });
 }

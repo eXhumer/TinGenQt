@@ -16,9 +16,6 @@ class CentralWidget : public QWidget
 public:
     explicit CentralWidget(QWidget *parent = nullptr);
 
-public slots:
-    void authBtnClicked(bool clicked);
-
 private:
     QLabel *appLabel;
     QGroupBox *googleAuthGroup;
