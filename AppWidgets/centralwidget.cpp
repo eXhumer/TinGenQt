@@ -159,4 +159,5 @@ CentralWidget::CentralWidget(QWidget *parent)
         test->setModel(new GoogleFSModel);
         test->show();
     });
+    connect(successMsgCheckBox, &QCheckBox::clicked, successMsgLineEdit, &QLineEdit::setEnabled);
 }
