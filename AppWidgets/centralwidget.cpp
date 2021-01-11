@@ -1,4 +1,5 @@
 #include "centralwidget.h"
+#include "googlefsmodel.h"
 #include <QDesktopServices>
 #include <jwt-cpp/jwt.h>
 #include <QApplication>
@@ -132,8 +133,9 @@ CentralWidget::CentralWidget(QWidget *parent)
             }
         }
     });
-    connect(generateBtn, &QPushButton::clicked, [this](){
+    connect(generateBtn, &QPushButton::clicked, [](){
         auto test = new QTreeView();
+        test->setModel(new GoogleFSModel);
         test->show();
     });
 }

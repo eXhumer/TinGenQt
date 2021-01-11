@@ -2,9 +2,7 @@
 
 GoogleFSItem::GoogleFSItem(const QVector<QMap<Qt::ItemDataRole, QVariant>> &itemData, GoogleFSItem *parent)
     : m_itemData(itemData), m_parentItem(parent)
-{
-
-}
+{}
 
 GoogleFSItem::~GoogleFSItem()
 {
