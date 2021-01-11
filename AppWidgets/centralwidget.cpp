@@ -101,6 +101,7 @@ CentralWidget::CentralWidget(QWidget *parent)
     auto indexOutputPathLayout = new QHBoxLayout;
     auto indexOutPathSelectBtn = new QPushButton(tr("main.index_options_group.select_output_btn"));
     auto indexOutPathLineEdit = new QLineEdit;
+    indexOutPathLineEdit->setEnabled(false);
     indexOutputPathLayout->addWidget(indexOutPathSelectBtn);
     indexOutputPathLayout->addWidget(indexOutPathLineEdit);
     indexOptionsLayout->addLayout(indexOutputPathLayout);
@@ -117,7 +118,9 @@ CentralWidget::CentralWidget(QWidget *parent)
     encIndexOptionsGroupLayout->addLayout(encPubKeyLayout);
 
     auto encPubKeyPathSelectBtn = new QPushButton(tr("main.encrypt_index_options_group.select_key_btn"));
+    encPubKeyPathSelectBtn->setEnabled(false);
     auto encPubKeyPathLineEdit = new QLineEdit;
+    encPubKeyPathLineEdit->setEnabled(false);
     encPubKeyLayout->addWidget(encPubKeyPathSelectBtn);
     encPubKeyLayout->addWidget(encPubKeyPathLineEdit);
 
@@ -160,4 +163,5 @@ CentralWidget::CentralWidget(QWidget *parent)
         test->show();
     });
     connect(successMsgCheckBox, &QCheckBox::clicked, successMsgLineEdit, &QLineEdit::setEnabled);
+    connect(encryptIndexCheckBox, &QCheckBox::clicked, encPubKeyPathSelectBtn, &QPushButton::setEnabled);
 }
