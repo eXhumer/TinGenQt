@@ -12,10 +12,10 @@ public:
     ~GoogleFSItem();
 
     void appendChild(GoogleFSItem *child);
-    GoogleFSItem *child(int row);
+    GoogleFSItem *child(int row) const;
     int childCount() const;
     int columnCount() const;
-    QVariant data(int column) const;
+    QVariant data(int column, Qt::ItemDataRole dataRole) const;
     int row() const;
     GoogleFSItem *parentItem();
 
