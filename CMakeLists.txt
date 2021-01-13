@@ -29,6 +29,8 @@ set(TS_FILES
 )
 
 set(PROJECT_SOURCES
+    utils.h
+    utils.cpp
     main.cpp
     ${TS_FILES}
 )
