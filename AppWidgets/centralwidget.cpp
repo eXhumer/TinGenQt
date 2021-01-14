@@ -26,13 +26,9 @@
 #include <QDesktopServices>
 #include <jwt-cpp/jwt.h>
 #include <QApplication>
-#include <QRadioButton>
 #include <QMessageBox>
-#include <QFormLayout>
-#include <QNetworkReply>
 #include <QJsonDocument>
 #include <QBoxLayout>
-#include <QCheckBox>
 #include <QTreeView>
 
 CentralWidget::CentralWidget(QWidget *parent)
