@@ -25,7 +25,9 @@
 #include "googleoauth2flow.h"
 #include <QNetworkAccessManager>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QGroupBox>
 #include <QWidget>
 #include <QLabel>
@@ -37,12 +39,35 @@ class CentralWidget : public QWidget
 public:
     explicit CentralWidget(QWidget *parent = nullptr);
 
+private slots:
+    void onOAuthGrant();
+
 private:
-    QLabel *appLabel;
+    QPushButton *encPubKeyPathSelectBtn;
+    QPushButton *selectFoldersBtn;
+    QPushButton *authNewUserBtn;
+    QPushButton *indexOutPathSelectBtn;
+    QPushButton *revokeUserBtn;
+    QPushButton *generateBtn;
+    QCheckBox *encryptIndexCheckBox;
+    QCheckBox *titleIdFilterCheckBox;
+    QCheckBox *extensionFilterCheckBox;
+    QCheckBox *successMsgCheckBox;
+    QRadioButton *zstdCompressionBtn;
+    QRadioButton *zlibCompressionBtn;
+    QRadioButton *noCompressionBtn;
     QGroupBox *googleAuthGroup;
+    QGroupBox *folderSelectGroup;
+    QGroupBox *indexOptionsGroup;
+    QGroupBox *encIndexOptionsGroup;
+    QLineEdit *googleAuthLineEdit;
+    QLineEdit *encPubKeyPathLineEdit;
+    QLineEdit *indexOutPathLineEdit;
+    QLineEdit *successMsgLineEdit;
+    QLabel *appLabel;
     QNetworkAccessManager *networkAccessManager;
     GoogleOAuth2Flow *googleOAuthFlow;
-
+    void initGUI();
 };
 
 #endif // CENTRALWIDGET_H

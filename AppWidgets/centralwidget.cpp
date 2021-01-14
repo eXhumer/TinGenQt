@@ -21,12 +21,16 @@
 
 #include "centralwidget.h"
 #include "googlefsmodel.h"
+#include "../utils.h"
+#include "../app_config.h"
 #include <QDesktopServices>
 #include <jwt-cpp/jwt.h>
 #include <QApplication>
 #include <QRadioButton>
 #include <QMessageBox>
 #include <QFormLayout>
+#include <QNetworkReply>
+#include <QJsonDocument>
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QTreeView>
@@ -36,8 +40,18 @@ CentralWidget::CentralWidget(QWidget *parent)
 {
     this->networkAccessManager = new QNetworkAccessManager(this);
     this->googleOAuthFlow = new GoogleOAuth2Flow(this->networkAccessManager, this);
-    this->googleOAuthFlow->setScope("https://www.googleapis.com/auth/drive openid profile email");
+    this->googleOAuthFlow->setScope("https://www.googleapis.com/auth/drive profile");
+    this->initGUI();
 
+    connect(this->authNewUserBtn, &QPushButton::clicked, this->googleOAuthFlow, &GoogleOAuth2Flow::grant);
+    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::authorizeWithBrowser, &QDesktopServices::openUrl);
+    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::granted, this, &CentralWidget::onOAuthGrant);
+    connect(this->successMsgCheckBox, &QCheckBox::clicked, this->successMsgLineEdit, &QLineEdit::setEnabled);
+    connect(this->encryptIndexCheckBox, &QCheckBox::clicked, this->encPubKeyPathSelectBtn, &QPushButton::setEnabled);
+}
+
+void CentralWidget::initGUI()
+{
     auto centralLayout = new QVBoxLayout;
     this->setLayout(centralLayout);
 
@@ -48,120 +62,125 @@ CentralWidget::CentralWidget(QWidget *parent)
     this->googleAuthGroup->setLayout(new QVBoxLayout);
     centralLayout->addWidget(this->googleAuthGroup);
 
-    auto googleAuthLineEdit = new QLineEdit;
-    googleAuthLineEdit->setEnabled(false);
-    googleAuthGroup->layout()->addWidget(googleAuthLineEdit);
+    this->googleAuthLineEdit = new QLineEdit;
+    this->googleAuthLineEdit->setEnabled(false);
+    this->googleAuthGroup->layout()->addWidget(this->googleAuthLineEdit);
 
-    auto authNewUserBtn = new QPushButton(tr("main.auth_user_btn"));
-    googleAuthGroup->layout()->addWidget(authNewUserBtn);
+    this->authNewUserBtn = new QPushButton(tr("main.auth_user_btn"));
+    this->googleAuthGroup->layout()->addWidget(this->authNewUserBtn);
 
-    auto revokeUserBtn = new QPushButton(tr("main.revoke_user_btn"));
-    revokeUserBtn->setEnabled(false);
-    googleAuthGroup->layout()->addWidget(revokeUserBtn);
+    this->revokeUserBtn = new QPushButton(tr("main.revoke_user_btn"));
+    this->revokeUserBtn->setEnabled(false);
+    this->googleAuthGroup->layout()->addWidget(this->revokeUserBtn);
 
-    auto folderSelectGroup = new QGroupBox(tr("main.folder_select_group"));
-    folderSelectGroup->setLayout(new QVBoxLayout);
-    centralLayout->addWidget(folderSelectGroup);
+    this->folderSelectGroup = new QGroupBox(tr("main.folder_select_group"));
+    this->folderSelectGroup->setLayout(new QVBoxLayout);
+    centralLayout->addWidget(this->folderSelectGroup);
 
-    auto selectFoldersBtn = new QPushButton(tr("main.select_folders_btn"));
-    selectFoldersBtn->setEnabled(false);
-    folderSelectGroup->layout()->addWidget(selectFoldersBtn);
+    this->selectFoldersBtn = new QPushButton(tr("main.select_folders_btn"));
+    this->selectFoldersBtn->setEnabled(false);
+    this->folderSelectGroup->layout()->addWidget(this->selectFoldersBtn);
 
-    auto indexOptionsGroup = new QGroupBox(tr("main.index_options_group"));
+    this->indexOptionsGroup = new QGroupBox(tr("main.index_options_group"));
     auto indexOptionsLayout = new QVBoxLayout;
-    indexOptionsGroup->setLayout(indexOptionsLayout);
-    centralLayout->addWidget(indexOptionsGroup);
+    this->indexOptionsGroup->setLayout(indexOptionsLayout);
+    centralLayout->addWidget(this->indexOptionsGroup);
 
     auto compressionLayout = new QHBoxLayout;
-    auto zstdCompressionBtn = new QRadioButton(tr("main.index_options_group.zstd_compress_btn"));
-    auto zlibCompressionBtn = new QRadioButton(tr("main.index_options_group.zlib_compress_btn"));
-    auto noCompressionBtn = new QRadioButton(tr("main.index_options_group.no_compress_btn"));
-    compressionLayout->addWidget(zstdCompressionBtn);
-    compressionLayout->addWidget(zlibCompressionBtn);
-    compressionLayout->addWidget(noCompressionBtn);
+    this->zstdCompressionBtn = new QRadioButton(tr("main.index_options_group.zstd_compress_btn"));
+    this->zlibCompressionBtn = new QRadioButton(tr("main.index_options_group.zlib_compress_btn"));
+    this->noCompressionBtn = new QRadioButton(tr("main.index_options_group.no_compress_btn"));
+    compressionLayout->addWidget(this->zstdCompressionBtn);
+    compressionLayout->addWidget(this->zlibCompressionBtn);
+    compressionLayout->addWidget(this->noCompressionBtn);
     indexOptionsLayout->addLayout(compressionLayout);
 
     auto successLayout = new QHBoxLayout;
-    auto successMsgCheckBox = new QCheckBox(tr("main.index_options_group.success"));
-    auto successMsgLineEdit = new QLineEdit;
-    successMsgLineEdit->setEnabled(false);
-    successLayout->addWidget(successMsgCheckBox);
-    successLayout->addWidget(successMsgLineEdit);
+    this->successMsgCheckBox = new QCheckBox(tr("main.index_options_group.success"));
+    this->successMsgLineEdit = new QLineEdit;
+    this->successMsgLineEdit->setEnabled(false);
+    successLayout->addWidget(this->successMsgCheckBox);
+    successLayout->addWidget(this->successMsgLineEdit);
     indexOptionsLayout->addLayout(successLayout);
 
     auto filterOptionsLayout = new QGridLayout;
-    auto titleIdFilterCheckBox = new QCheckBox(tr("main.index_options_group.title_id_filter"));
-    auto extensionFilterCheckBox = new QCheckBox(tr("main.index_options_group.extension_filter"));
-    filterOptionsLayout->addWidget(titleIdFilterCheckBox, 0, 0);
-    filterOptionsLayout->addWidget(extensionFilterCheckBox, 0, 1);
+    this->titleIdFilterCheckBox = new QCheckBox(tr("main.index_options_group.title_id_filter"));
+    this->extensionFilterCheckBox = new QCheckBox(tr("main.index_options_group.extension_filter"));
+    filterOptionsLayout->addWidget(this->titleIdFilterCheckBox, 0, 0);
+    filterOptionsLayout->addWidget(this->extensionFilterCheckBox, 0, 1);
     indexOptionsLayout->addLayout(filterOptionsLayout);
 
     // TODO: chainload options
 
     auto indexOutputPathLayout = new QHBoxLayout;
-    auto indexOutPathSelectBtn = new QPushButton(tr("main.index_options_group.select_output_btn"));
-    auto indexOutPathLineEdit = new QLineEdit;
-    indexOutPathLineEdit->setEnabled(false);
-    indexOutputPathLayout->addWidget(indexOutPathSelectBtn);
-    indexOutputPathLayout->addWidget(indexOutPathLineEdit);
+    this->indexOutPathSelectBtn = new QPushButton(tr("main.index_options_group.select_output_btn"));
+    this->indexOutPathLineEdit = new QLineEdit;
+    this->indexOutPathLineEdit->setEnabled(false);
+    indexOutputPathLayout->addWidget(this->indexOutPathSelectBtn);
+    indexOutputPathLayout->addWidget(this->indexOutPathLineEdit);
     indexOptionsLayout->addLayout(indexOutputPathLayout);
 
-    auto encIndexOptionsGroup = new QGroupBox(tr("main.encrypt_index_options_group"));
+    this->encIndexOptionsGroup = new QGroupBox(tr("main.encrypt_index_options_group"));
     auto encIndexOptionsGroupLayout = new QVBoxLayout;
-    encIndexOptionsGroup->setLayout(encIndexOptionsGroupLayout);
-    centralLayout->addWidget(encIndexOptionsGroup);
+    this->encIndexOptionsGroup->setLayout(encIndexOptionsGroupLayout);
+    centralLayout->addWidget(this->encIndexOptionsGroup);
 
-    auto encryptIndexCheckBox = new QCheckBox(tr("main.encrypt_index_options_group.encrypt_index"));
-    encIndexOptionsGroupLayout->addWidget(encryptIndexCheckBox, 0, Qt::AlignHCenter);
+    this->encryptIndexCheckBox = new QCheckBox(tr("main.encrypt_index_options_group.encrypt_index"));
+    encIndexOptionsGroupLayout->addWidget(this->encryptIndexCheckBox, 0, Qt::AlignHCenter);
 
     auto encPubKeyLayout = new QHBoxLayout;
     encIndexOptionsGroupLayout->addLayout(encPubKeyLayout);
 
-    auto encPubKeyPathSelectBtn = new QPushButton(tr("main.encrypt_index_options_group.select_key_btn"));
-    encPubKeyPathSelectBtn->setEnabled(false);
-    auto encPubKeyPathLineEdit = new QLineEdit;
-    encPubKeyPathLineEdit->setEnabled(false);
-    encPubKeyLayout->addWidget(encPubKeyPathSelectBtn);
-    encPubKeyLayout->addWidget(encPubKeyPathLineEdit);
+    this->encPubKeyPathSelectBtn = new QPushButton(tr("main.encrypt_index_options_group.select_key_btn"));
+    this->encPubKeyPathSelectBtn->setEnabled(false);
+    this->encPubKeyPathLineEdit = new QLineEdit;
+    this->encPubKeyPathLineEdit->setEnabled(false);
+    encPubKeyLayout->addWidget(this->encPubKeyPathSelectBtn);
+    encPubKeyLayout->addWidget(this->encPubKeyPathLineEdit);
 
-    auto generateBtn = new QPushButton(tr("main.generate_btn"));
-    centralLayout->addWidget(generateBtn);
+    this->generateBtn = new QPushButton(tr("main.generate_btn"));
+    centralLayout->addWidget(this->generateBtn);
 
     centralLayout->addStretch();
+}
 
-    connect(authNewUserBtn, &QPushButton::clicked, this, [this](){
-        this->googleOAuthFlow->grant();
-    });
-    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::authorizeWithBrowser, &QDesktopServices::openUrl);
-    connect(this->googleOAuthFlow, &GoogleOAuth2Flow::granted, this, [=](){
-        auto extraTokens = this->googleOAuthFlow->extraTokens();
-        auto extraTokensKeys = extraTokens.keys();
-        for(auto const &extraTokenkey: extraTokensKeys)
+void CentralWidget::onOAuthGrant()
+{
+    auto extraTokens = this->googleOAuthFlow->extraTokens();
+    auto extraTokensKeys = extraTokens.keys();
+    for(auto const &extraTokenkey: extraTokensKeys)
+    {
+        // if id_token present, update login status
+        if(extraTokenkey == "id_token")
         {
-            if(extraTokenkey == "id_token")
+#if 1
+            // without jwt-cpp
+            auto idTokenJwtTokenParts = extraTokens[extraTokenkey].toString().split(".");
+            auto jwtTokenHeader = idTokenJwtTokenParts[0];
+            Q_UNUSED(jwtTokenHeader);
+            auto jwtTokenPayload = idTokenJwtTokenParts[1].toUtf8();
+            auto userProfile = QJsonDocument::fromJson(QByteArray::fromBase64(jwtTokenPayload, QByteArray::Base64UrlEncoding));
+            auto jwtTokenSignature = idTokenJwtTokenParts[2];
+            Q_UNUSED(jwtTokenSignature);
+            auto userFullName = userProfile["name"].toString();
+            googleAuthLineEdit->setText(tr("main.logged_in_as") + " " + userFullName);
+            authNewUserBtn->setEnabled(false);
+            revokeUserBtn->setEnabled(true);
+            selectFoldersBtn->setEnabled(true);
+#else
+            // with jwt-cpp
+            auto idTokenJwt = jwt::decode(extraTokens[extraTokenkey].toString().toStdString());
+            for(auto &claim: idTokenJwt.get_payload_claims())
             {
-                auto idTokenJwt = jwt::decode(extraTokens[extraTokenkey].toString().toStdString());
-                for(auto &claim: idTokenJwt.get_payload_claims())
-                {
-                    if(claim.first == "name") {
-                        googleAuthLineEdit->setText(tr("main.logged_in_as") + QString::fromStdString(claim.second.as_string()));
-                        authNewUserBtn->setEnabled(false);
-                        revokeUserBtn->setEnabled(true);
-                        selectFoldersBtn->setEnabled(true);
-                    } else {
-                        continue;
-                    }
+                if(claim.first == "name") {
+                    auto userFullName = QString::fromStdString(claim.second.as_string());
+                    googleAuthLineEdit->setText(tr("main.logged_in_as") + " " + userFullName);
+                    authNewUserBtn->setEnabled(false);
+                    revokeUserBtn->setEnabled(true);
+                    selectFoldersBtn->setEnabled(true);
                 }
-            } else {
-                continue;
             }
+#endif
         }
-    });
-    connect(generateBtn, &QPushButton::clicked, [](){
-        auto test = new QTreeView();
-        test->setModel(new GoogleFSModel);
-        test->show();
-    });
-    connect(successMsgCheckBox, &QCheckBox::clicked, successMsgLineEdit, &QLineEdit::setEnabled);
-    connect(encryptIndexCheckBox, &QCheckBox::clicked, encPubKeyPathSelectBtn, &QPushButton::setEnabled);
+    }
 }
