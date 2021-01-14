@@ -24,7 +24,7 @@
 GoogleFSModel::GoogleFSModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
-    QVector<QMap<Qt::ItemDataRole, QVariant>> itemData{
+    QVector<QMap<int, QVariant>> itemData{
         {{Qt::DisplayRole, QString(tr("model.title"))}},
         {{Qt::DisplayRole, QString(tr("model.summary"))}}
     };

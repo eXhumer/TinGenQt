@@ -21,7 +21,7 @@
 
 #include "googlefsitem.h"
 
-GoogleFSItem::GoogleFSItem(const QVector<QMap<Qt::ItemDataRole, QVariant>> &itemData, GoogleFSItem *parent)
+GoogleFSItem::GoogleFSItem(const QVector<QMap<int, QVariant>> &itemData, GoogleFSItem *parent)
     : m_itemData(itemData), m_parentItem(parent)
 {}
 
@@ -52,9 +52,9 @@ int GoogleFSItem::columnCount() const
     return this->m_itemData.count();
 }
 
-QVariant GoogleFSItem::data(int column, Qt::ItemDataRole role) const
+QVariant GoogleFSItem::data(int column, int role) const
 {
-    return this->m_itemData.at(column)[role];
+    return this->m_itemData.at(column)[(Qt::ItemDataRole)role];
 }
 
 int GoogleFSItem::row() const

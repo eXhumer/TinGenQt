@@ -25,23 +25,28 @@
 #include <QVariant>
 #include <QVector>
 
+enum class GoogleFSItemDataRoles {
+    FileIdRole = 0xcc,
+    FileTypeRole = 0xdd,
+};
+
 class GoogleFSItem
 {
 
 public:
-    GoogleFSItem(const QVector<QMap<Qt::ItemDataRole, QVariant>> &itemData, GoogleFSItem *parent = nullptr);
+    GoogleFSItem(const QVector<QMap<int, QVariant>> &itemData, GoogleFSItem *parent = nullptr);
     ~GoogleFSItem();
 
     void appendChild(GoogleFSItem *child);
     GoogleFSItem *child(int row) const;
     int childCount() const;
     int columnCount() const;
-    QVariant data(int column, Qt::ItemDataRole dataRole) const;
+    QVariant data(int column, int dataRole) const;
     int row() const;
     GoogleFSItem *parentItem();
 
 private:
-    QVector<QMap<Qt::ItemDataRole, QVariant>> m_itemData;
+    QVector<QMap<int, QVariant>> m_itemData;
     QVector<GoogleFSItem*> m_childItems;
     GoogleFSItem *m_parentItem;
 };
