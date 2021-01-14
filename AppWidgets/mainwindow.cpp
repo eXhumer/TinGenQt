@@ -26,10 +26,12 @@
 #include <QBoxLayout>
 #include <QStatusBar>
 #include <QMenuBar>
+#include <QDir>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QSettings &appSettings, QWidget *parent)
     : QMainWindow(parent)
 {
+    Q_UNUSED(appSettings);
     // Menu Bar Setup
     this->setMenuBar(new QMenuBar);
     auto fileMenu = this->menuBar()->addMenu(tr("header.file"));

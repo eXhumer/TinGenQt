@@ -23,13 +23,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QSettings &appSettings, QWidget *parent = nullptr);
+
 public slots:
     void showAbout();
     void showAboutQt();
