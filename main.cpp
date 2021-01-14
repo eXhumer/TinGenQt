@@ -19,35 +19,36 @@
 **
 ***************************************************************************/
 
-#include "AppWidgets/mainwindow.h"
-#include "app_config.h"
-#include "utils.h"
-#include <QCommandLineParser>
-#include <QStandardPaths>
-#include <QApplication>
-#include <QTranslator>
-#include <QSettings>
-#include <QDir>
+#include "AppWidgets/mainwindow.h" // MainWindow
+#include "app_config.h" // PROJECT_NAME / PROJECT_VERSION
+#include "utils.h" // jsonFormat
+#include <QStandardPaths> // QStandardPaths
+#include <QApplication> // QApplication
+#include <QTranslator> // QTranslator
+#include <QSettings> // QSettings
+#include <QDir> // QDir
+
+const QString orgName("eXhumer");
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     app.setApplicationName(PROJECT_NAME);
     app.setApplicationVersion(PROJECT_VERSION);
-    QString orgName("eXhumer");
     app.setOrganizationName(orgName);
 
+    // $HOME/orgName/PROJECT_NAME/
     QDir configDir(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
     if(!configDir.exists())
         configDir.mkpath(".");
 
-    QSettings::setDefaultFormat(jsonFormat);
+    QSettings appSettings(configDir.path() + "/app_config.json", jsonFormat);
 
     QTranslator appTranslator;
     if(appTranslator.load(QLocale(), PROJECT_NAME, ".", QString(), ".qm"))
         app.installTranslator(&appTranslator);
 
-    MainWindow win;
+    MainWindow win(appSettings);
     win.show();
     return app.exec();
 }
