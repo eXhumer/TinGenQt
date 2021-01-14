@@ -19,17 +19,21 @@
 **
 ***************************************************************************/
 
-#include "centralwidget.h"
-#include "googlefsmodel.h"
 #include "../utils.h"
 #include "../app_config.h"
+#include "centralwidget.h"
+#include "googlefsmodel.h"
 #include <QDesktopServices>
 #include <jwt-cpp/jwt.h>
+#include <QJsonDocument>
+#include <QNetworkReply>
 #include <QApplication>
 #include <QMessageBox>
-#include <QJsonDocument>
+#include <QJsonObject>
 #include <QBoxLayout>
 #include <QTreeView>
+#include <QUrlQuery>
+
 
 CentralWidget::CentralWidget(QWidget *parent)
     : QWidget(parent)
@@ -40,6 +44,7 @@ CentralWidget::CentralWidget(QWidget *parent)
     this->initGUI();
 
     connect(this->authNewUserBtn, &QPushButton::clicked, this->googleOAuthFlow, &GoogleOAuth2Flow::grant);
+    connect(this->revokeUserBtn, &QPushButton::clicked, this, &CentralWidget::revokeUserToken);
     connect(this->googleOAuthFlow, &GoogleOAuth2Flow::authorizeWithBrowser, &QDesktopServices::openUrl);
     connect(this->googleOAuthFlow, &GoogleOAuth2Flow::granted, this, &CentralWidget::onOAuthGrant);
     connect(this->successMsgCheckBox, &QCheckBox::clicked, this->successMsgLineEdit, &QLineEdit::setEnabled);
@@ -66,7 +71,6 @@ void CentralWidget::initGUI()
     this->googleAuthGroup->layout()->addWidget(this->authNewUserBtn);
 
     this->revokeUserBtn = new QPushButton(tr("main.revoke_user_btn"));
-    this->revokeUserBtn->setEnabled(false);
     this->googleAuthGroup->layout()->addWidget(this->revokeUserBtn);
 
     this->folderSelectGroup = new QGroupBox(tr("main.folder_select_group"));
@@ -74,7 +78,6 @@ void CentralWidget::initGUI()
     centralLayout->addWidget(this->folderSelectGroup);
 
     this->selectFoldersBtn = new QPushButton(tr("main.select_folders_btn"));
-    this->selectFoldersBtn->setEnabled(false);
     this->folderSelectGroup->layout()->addWidget(this->selectFoldersBtn);
 
     this->indexOptionsGroup = new QGroupBox(tr("main.index_options_group"));
@@ -138,6 +141,8 @@ void CentralWidget::initGUI()
     centralLayout->addWidget(this->generateBtn);
 
     centralLayout->addStretch();
+
+    this->onRevokeSuccess();
 }
 
 void CentralWidget::onOAuthGrant()
@@ -159,10 +164,7 @@ void CentralWidget::onOAuthGrant()
             auto jwtTokenSignature = idTokenJwtTokenParts[2];
             Q_UNUSED(jwtTokenSignature);
             auto userFullName = userProfile["name"].toString();
-            googleAuthLineEdit->setText(tr("main.logged_in_as") + " " + userFullName);
-            authNewUserBtn->setEnabled(false);
-            revokeUserBtn->setEnabled(true);
-            selectFoldersBtn->setEnabled(true);
+            this->onAuthSuccess(userFullName);
 #else
             // with jwt-cpp
             auto idTokenJwt = jwt::decode(extraTokens[extraTokenkey].toString().toStdString());
@@ -179,4 +181,44 @@ void CentralWidget::onOAuthGrant()
 #endif
         }
     }
+}
+
+void CentralWidget::revokeUserToken()
+{
+    // TODO: Use openid discovery later
+    // QUrl googleOpenIDConfigUrl("https://accounts.google.com/.well-known/openid-configuration");
+    // QNetworkRequest googleOpenIDConfigReq(googleOpenIDConfigUrl);
+    // auto googleOpenIDConfigRes = this->networkAccessManager->get(googleOpenIDConfigReq);
+    QUrl googleOAuthRevokeUrl("https://oauth2.googleapis.com/revoke");
+    QUrlQuery reqBody({{"token", this->googleOAuthFlow->refreshToken()}});;
+    QNetworkRequest googleOAuthRevokeReq(googleOAuthRevokeUrl);
+    googleOAuthRevokeReq.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    auto googleOAuthRevokeRes = this->networkAccessManager->post(googleOAuthRevokeReq, reqBody.toString(QUrl::FullyEncoded).toUtf8());
+    connect(googleOAuthRevokeRes, &QNetworkReply::finished, [this, googleOAuthRevokeRes](){
+        auto resStatusCode = googleOAuthRevokeRes->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (resStatusCode != 200)
+            QMessageBox::warning(this, "Failed to revoke token", "Status Code: " + QString::number(resStatusCode));
+        else
+            QMessageBox::information(this, "Token Revoke Success", "Token revoked successfully!");
+    });
+    connect(googleOAuthRevokeRes, &QNetworkReply::finished, this, &CentralWidget::onRevokeSuccess);
+    connect(googleOAuthRevokeRes, &QNetworkReply::finished, googleOAuthRevokeRes, &QNetworkReply::deleteLater);
+}
+
+void CentralWidget::onRevokeSuccess()
+{
+    this->googleAuthLineEdit->setText(QString(tr("main.not_authorized")));
+    this->authNewUserBtn->setEnabled(true);
+    this->revokeUserBtn->setEnabled(false);
+    this->selectFoldersBtn->setEnabled(false);
+    this->generateBtn->setEnabled(false);
+}
+
+void CentralWidget::onAuthSuccess(const QString& userName)
+{
+    this->googleAuthLineEdit->setText(tr("main.logged_in_as") + " " + userName);
+    this->authNewUserBtn->setEnabled(false);
+    this->revokeUserBtn->setEnabled(true);
+    this->selectFoldersBtn->setEnabled(true);
+    this->generateBtn->setEnabled(true);
 }

@@ -41,6 +41,9 @@ public:
 
 private slots:
     void onOAuthGrant();
+    void revokeUserToken();
+    void onRevokeSuccess();
+    void onAuthSuccess(const QString &userName);
 
 private:
     QPushButton *encPubKeyPathSelectBtn;
