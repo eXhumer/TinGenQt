@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
     QTranslator appTranslator;
     if(appTranslator.load(QLocale(), PROJECT_NAME, ".", QString(), ".qm"))
         app.installTranslator(&appTranslator);
+    else if(appTranslator.load(QLocale(QLocale::English, QLocale::UnitedStates), PROJECT_NAME, ".", QString(), ".qm"))
+        app.installTranslator(&appTranslator);
 
     MainWindow win(appSettings);
     win.show();
