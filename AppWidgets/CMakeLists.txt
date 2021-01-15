@@ -5,6 +5,8 @@ set(APPWIDGETS_SOURCES
     centralwidget.h
     googleoauth2flow.cpp
     googleoauth2flow.h
+    googlefilesystemmodel.cpp
+    googlefilesystemmodel.h
     googlefolderselectoritem.cpp
     googlefolderselectoritem.h
     googlefolderselectorwidget.cpp
