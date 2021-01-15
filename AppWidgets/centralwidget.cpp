@@ -22,7 +22,7 @@
 #include "../utils.h"
 #include "../app_config.h"
 #include "centralwidget.h"
-#include "googlefsmodel.h"
+#include "googlefolderselectorwidget.h"
 #include <QDesktopServices>
 #include <jwt-cpp/jwt.h>
 #include <QJsonDocument>
@@ -34,10 +34,10 @@
 #include <QTreeView>
 #include <QUrlQuery>
 
-
 CentralWidget::CentralWidget(QWidget *parent)
     : QWidget(parent)
 {
+    auto googleFSWidget = new GoogleFolderSelectorWidget;
     this->networkAccessManager = new QNetworkAccessManager(this);
     this->googleOAuthFlow = new GoogleOAuth2Flow(this->networkAccessManager, this);
     this->googleOAuthFlow->setScope("https://www.googleapis.com/auth/drive profile");
@@ -49,6 +49,7 @@ CentralWidget::CentralWidget(QWidget *parent)
     connect(this->googleOAuthFlow, &GoogleOAuth2Flow::granted, this, &CentralWidget::onOAuthGrant);
     connect(this->successMsgCheckBox, &QCheckBox::clicked, this->successMsgLineEdit, &QLineEdit::setEnabled);
     connect(this->encryptIndexCheckBox, &QCheckBox::clicked, this->encPubKeyPathSelectBtn, &QPushButton::setEnabled);
+    connect(this->selectFoldersBtn, &QPushButton::clicked, googleFSWidget, &GoogleFolderSelectorWidget::show);
 }
 
 void CentralWidget::initGUI()

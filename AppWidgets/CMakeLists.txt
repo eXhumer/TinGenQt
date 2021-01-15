@@ -5,10 +5,12 @@ set(APPWIDGETS_SOURCES
     mainwindow.h
     googleoauth2flow.cpp
     googleoauth2flow.h
-    googlefsmodel.cpp
-    googlefsmodel.h
-    googlefsitem.cpp
-    googlefsitem.h
+    googlefolderselectormodel.cpp
+    googlefolderselectormodel.h
+    googlefolderselectoritem.cpp
+    googlefolderselectoritem.h
+    googlefolderselectorwidget.cpp
+    googlefolderselectorwidget.h
 )
 
 add_library(AppWidgets
