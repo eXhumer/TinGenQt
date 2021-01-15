@@ -37,9 +37,9 @@
 CentralWidget::CentralWidget(QWidget *parent)
     : QWidget(parent)
 {
-    auto googleFSWidget = new GoogleFolderSelectorWidget;
     this->networkAccessManager = new QNetworkAccessManager(this);
     this->googleOAuthFlow = new GoogleOAuth2Flow(this->networkAccessManager, this);
+    auto googleFSWidget = new GoogleFolderSelectorWidget(this->googleOAuthFlow);
     this->googleOAuthFlow->setScope("https://www.googleapis.com/auth/drive profile");
     this->initGUI();
 
