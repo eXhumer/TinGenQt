@@ -17,14 +17,18 @@ public:
 
     enum Roles {
         FileIDRole = Qt::UserRole + 1,
-        FileNameRole = Qt::UserRole + 2,
-        FileTypeRole = Qt::UserRole + 3,
+        FileTypeRole = Qt::UserRole + 2,
+        FileNameRole = Qt::DisplayRole,
+        FileSelectedRole = Qt::CheckStateRole,
+        FileIconRole = Qt::DecorationRole,
     };
 
     QString fileID(const QModelIndex &index) const;
     QString fileName(const QModelIndex &index) const;
     FileType fileType(const QModelIndex &index) const;
+    QIcon fileIcon(const QModelIndex &index) const;
     bool isDir(const QModelIndex &index) const;
+    bool selected(const QModelIndex &index) const;
 
     explicit GoogleFileSystemModel(QObject *parent = nullptr);
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
