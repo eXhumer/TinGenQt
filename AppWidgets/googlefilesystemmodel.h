@@ -15,6 +15,12 @@ public:
         Shortcut,
     };
 
+    enum SelectState {
+        Checked = Qt::Checked,
+        Unchecked = Qt::Unchecked,
+        PartiallyChecked = Qt::PartiallyChecked,
+    };
+
     enum Roles {
         FileIDRole = Qt::UserRole + 1,
         FileTypeRole = Qt::UserRole + 2,
@@ -28,7 +34,7 @@ public:
     FileType fileType(const QModelIndex &index) const;
     QIcon fileIcon(const QModelIndex &index) const;
     bool isDir(const QModelIndex &index) const;
-    bool selected(const QModelIndex &index) const;
+    SelectState selectState(const QModelIndex &index) const;
 
     explicit GoogleFileSystemModel(QObject *parent = nullptr);
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;

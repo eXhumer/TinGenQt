@@ -1,6 +1,11 @@
 #include "googlefilesystemmodel.h"
 #include <QIcon>
 
+GoogleFileSystemModel::GoogleFileSystemModel(QObject *parent)
+{
+    // TODO: FIXME
+}
+
 QString GoogleFileSystemModel::fileID(const QModelIndex &index) const
 {
     // TODO: FIXME
@@ -26,12 +31,7 @@ bool GoogleFileSystemModel::isDir(const QModelIndex &index) const
     // TODO: FIXME
 }
 
-bool GoogleFileSystemModel::selected(const QModelIndex &index) const
-{
-    // TODO: FIXME
-}
-
-GoogleFileSystemModel::GoogleFileSystemModel(QObject *parent)
+GoogleFileSystemModel::SelectState GoogleFileSystemModel::selectState(const QModelIndex &index) const
 {
     // TODO: FIXME
 }
