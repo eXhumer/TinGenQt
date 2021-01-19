@@ -1,6 +1,7 @@
 #ifndef GOOGLEFILESYSTEMMODEL_H
 #define GOOGLEFILESYSTEMMODEL_H
 
+#include "googlefilesystemitem.h"
 #include <QAbstractItemModel>
 
 class GoogleFileSystemModel : public QAbstractItemModel
@@ -46,6 +47,10 @@ public:
     bool canFetchMore(const QModelIndex &parent) const override;
     void fetchMore(const QModelIndex &parent) override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+
+private:
+    GoogleFileSystemItem *rootItem;
 };
 
 #endif // GOOGLEFILESYSTEMMODEL_H

@@ -2,6 +2,7 @@
 #include <QIcon>
 
 GoogleFileSystemModel::GoogleFileSystemModel(QObject *parent)
+    : QAbstractItemModel(parent)
 {
     // TODO: FIXME
 }
@@ -77,6 +78,11 @@ void GoogleFileSystemModel::fetchMore(const QModelIndex &parent)
 }
 
 QVariant GoogleFileSystemModel::data(const QModelIndex &index, int role) const
+{
+    // TODO: FIXME
+}
+
+Qt::ItemFlags GoogleFileSystemModel::flags(const QModelIndex &index) const
 {
     // TODO: FIXME
 }
