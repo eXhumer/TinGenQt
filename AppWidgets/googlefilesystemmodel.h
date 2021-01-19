@@ -38,6 +38,7 @@ public:
     SelectState selectState(const QModelIndex &index) const;
 
     explicit GoogleFileSystemModel(QObject *parent = nullptr);
+    ~GoogleFileSystemModel();
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;

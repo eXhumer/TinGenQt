@@ -10,6 +10,11 @@ GoogleFileSystemModel::GoogleFileSystemModel(QObject *parent)
     }, nullptr);
 }
 
+GoogleFileSystemModel::~GoogleFileSystemModel()
+{
+    delete this->rootItem;
+}
+
 QString GoogleFileSystemModel::fileID(const QModelIndex &index) const
 {
     return this->data(index, GoogleFileSystemModel::FileIDRole).toString();
@@ -37,17 +42,35 @@ bool GoogleFileSystemModel::isDir(const QModelIndex &index) const
 
 GoogleFileSystemModel::SelectState GoogleFileSystemModel::selectState(const QModelIndex &index) const
 {
-    // TODO: FIXME
+    return this->data(index, GoogleFileSystemModel::FileSelectedRole).value<GoogleFileSystemModel::SelectState>();
 }
 
 QVariant GoogleFileSystemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    // TODO: FIXME
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+        return this->rootItem->data(section, role);
+
+    return QVariant();
 }
 
 QModelIndex GoogleFileSystemModel::index(int row, int column, const QModelIndex &parent) const
 {
-    // TODO: FIXME
+    if (this->hasIndex(row, column, parent))
+    {
+        GoogleFileSystemItem *parentItem;
+
+        if (!parent.isValid())
+            parentItem = rootItem;
+        else
+            parentItem = static_cast<GoogleFileSystemItem*>(parent.internalPointer());
+
+        GoogleFileSystemItem *childItem = parentItem->child(row);
+
+        if (childItem)
+            return this->createIndex(row, column, childItem);
+    }
+
+    return QModelIndex();
 }
 
 QModelIndex GoogleFileSystemModel::parent(const QModelIndex &index) const
