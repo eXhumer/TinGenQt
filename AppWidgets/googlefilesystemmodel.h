@@ -54,4 +54,8 @@ private:
     GoogleFileSystemItem *rootItem;
 };
 
+Q_DECLARE_METATYPE(GoogleFileSystemModel::FileType)
+Q_DECLARE_METATYPE(GoogleFileSystemModel::SelectState)
+Q_DECLARE_METATYPE(GoogleFileSystemModel::Roles)
+
 #endif // GOOGLEFILESYSTEMMODEL_H
