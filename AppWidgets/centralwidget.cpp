@@ -88,6 +88,7 @@ void CentralWidget::initGUI()
 
     auto compressionLayout = new QHBoxLayout;
     this->zstdCompressionBtn = new QRadioButton(tr("main.index_options_group.zstd_compress_btn"));
+    this->zstdCompressionBtn->toggle(); // make zstd default compression
     this->zlibCompressionBtn = new QRadioButton(tr("main.index_options_group.zlib_compress_btn"));
     this->noCompressionBtn = new QRadioButton(tr("main.index_options_group.no_compress_btn"));
     compressionLayout->addWidget(this->zstdCompressionBtn);
