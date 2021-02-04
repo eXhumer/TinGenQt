@@ -20,6 +20,7 @@
 ***************************************************************************/
 
 #include "googlefolderselectorwidget.h"
+#include "googlefilesystemmodel.h"
 #include <QJsonDocument>
 #include <QNetworkReply>
 #include <QPushButton>
@@ -33,7 +34,9 @@ GoogleFolderSelectorWidget::GoogleFolderSelectorWidget(GoogleOAuth2Flow *googleF
 {
     this->initUI();
     connect(googleFlow, &GoogleOAuth2Flow::granted, [this](){
+        // get list of drives for user
         auto drivesRes = this->googleFlow->get(QUrl("https://www.googleapis.com/drive/v3/drives"), {{"pageSize", 100}});
+        //
         connect(drivesRes, &QNetworkReply::finished, [drivesRes](){
             auto drivesJsonDoc = QJsonDocument::fromJson(drivesRes->readAll());
             auto drivesArray = drivesJsonDoc["drives"].toArray();
@@ -55,9 +58,11 @@ void GoogleFolderSelectorWidget::initUI()
     auto btnsLayout = new QHBoxLayout;
     btnsLayout->addStretch();
     auto acceptBtn = new QPushButton(tr("selector.accept"));
-    auto rejecttBtn = new QPushButton(tr("selector.reject"));
+    auto rejectBtn = new QPushButton(tr("selector.reject"));
     btnsLayout->addWidget(acceptBtn);
-    btnsLayout->addWidget(rejecttBtn);
+    btnsLayout->addWidget(rejectBtn);
     btnsLayout->addStretch();
     widgetLayout->addLayout(btnsLayout);
+    auto model = new GoogleFileSystemModel();
+    treeView->setModel(model);
 }

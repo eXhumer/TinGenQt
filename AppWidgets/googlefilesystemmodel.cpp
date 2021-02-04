@@ -4,10 +4,20 @@
 GoogleFileSystemModel::GoogleFileSystemModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
-    this->rootItem = new GoogleFileSystemItem({
-        {{Qt::DisplayRole, "Test 1"}},
-        {{Qt::DisplayRole, "Test 2"}},
-    }, nullptr);
+    QVector<QMap<int, QVariant>> headerColumnDatas;
+    QMap<int, QVariant> nameColumnData{
+        {Qt::DisplayRole, "Name"},
+    };
+    QMap<int, QVariant> modifiedDateColumnData{
+        {Qt::DisplayRole, "Modified Date"},
+    };
+    QMap<int, QVariant> fileSizeColumnData{
+        {Qt::DisplayRole, "File Size"},
+    };
+    headerColumnDatas.push_back(nameColumnData);
+    headerColumnDatas.push_back(modifiedDateColumnData);
+    headerColumnDatas.push_back(fileSizeColumnData);
+    this->rootItem = new TreeModelItem(headerColumnDatas, nullptr);
 }
 
 GoogleFileSystemModel::~GoogleFileSystemModel()
@@ -35,11 +45,6 @@ QIcon GoogleFileSystemModel::fileIcon(const QModelIndex &index) const
     return this->data(index, GoogleFileSystemModel::FileIconRole).value<QIcon>();
 }
 
-bool GoogleFileSystemModel::isDir(const QModelIndex &index) const
-{
-    return this->fileType(index) == GoogleFileSystemModel::Folder || this->fileType(index) == GoogleFileSystemModel::Drive;
-}
-
 GoogleFileSystemModel::SelectState GoogleFileSystemModel::selectState(const QModelIndex &index) const
 {
     return this->data(index, GoogleFileSystemModel::FileSelectedRole).value<GoogleFileSystemModel::SelectState>();
@@ -57,14 +62,14 @@ QModelIndex GoogleFileSystemModel::index(int row, int column, const QModelIndex 
 {
     if (this->hasIndex(row, column, parent))
     {
-        GoogleFileSystemItem *parentItem;
+        TreeModelItem *parentItem;
 
         if (!parent.isValid())
             parentItem = rootItem;
         else
-            parentItem = static_cast<GoogleFileSystemItem*>(parent.internalPointer());
+            parentItem = static_cast<TreeModelItem*>(parent.internalPointer());
 
-        GoogleFileSystemItem *childItem = parentItem->child(row);
+        TreeModelItem *childItem = parentItem->child(row);
 
         if (childItem)
             return this->createIndex(row, column, childItem);

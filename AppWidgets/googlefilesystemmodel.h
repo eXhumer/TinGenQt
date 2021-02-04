@@ -1,7 +1,7 @@
 #ifndef GOOGLEFILESYSTEMMODEL_H
 #define GOOGLEFILESYSTEMMODEL_H
 
-#include "googlefilesystemitem.h"
+#include "treemodelitem.h"
 #include <QAbstractItemModel>
 
 class GoogleFileSystemModel : public QAbstractItemModel
@@ -30,15 +30,16 @@ public:
         FileIconRole = Qt::DecorationRole,
     };
 
+    explicit GoogleFileSystemModel(QObject *parent = nullptr);
+    ~GoogleFileSystemModel();
+    void setModelFile();
+
     QString fileID(const QModelIndex &index) const;
     QString fileName(const QModelIndex &index) const;
     FileType fileType(const QModelIndex &index) const;
     QIcon fileIcon(const QModelIndex &index) const;
-    bool isDir(const QModelIndex &index) const;
     SelectState selectState(const QModelIndex &index) const;
 
-    explicit GoogleFileSystemModel(QObject *parent = nullptr);
-    ~GoogleFileSystemModel();
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
@@ -51,7 +52,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 private:
-    GoogleFileSystemItem *rootItem;
+    TreeModelItem *rootItem;
 };
 
 Q_DECLARE_METATYPE(GoogleFileSystemModel::FileType)
